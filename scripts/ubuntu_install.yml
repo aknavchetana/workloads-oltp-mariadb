@@ -1,0 +1,21 @@
+- name: 'install mariadb'
+  hosts: all
+  become: yes
+  tasks:
+      - name: update
+        apt: update_cache=yes
+        ignore_errors: yes
+      - name: Install MariaDB Server
+        apt: name=mariadb-server state=latest
+      - name: Install MariaDB client
+        apt: name=mariadb-client state=latest
+      - name : 'install python3-pip'
+        apt: "name=python3-pip state=present"
+      - name: 'install python3-dev'
+        apt: "name=python3-dev state=latest"
+      - name: 'install mysql-python'
+        shell: echo $(pip3 install MySQL-Python)
+      - name: 'install pymysql'
+        shell: echo $(pip3 install pymysql)
+      - name: 'Start the service'
+        service: name=mysql state=started

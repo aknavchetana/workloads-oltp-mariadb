@@ -1,0 +1,46 @@
+- name: 'install mariadb'
+  hosts: 172.19.8.5
+  become: yes
+  tasks:
+    - name: 'install'
+      yum: name=mariadb-server state=present
+      become: yes
+      become_user: root
+
+    - name: 'configure mariadb repos'
+      shell: echo $(install wget)
+      become: yes
+      become_user: root
+
+    - name: ' install repo '
+      shell: echo $( wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup )
+      become: yes
+      become_user: root
+
+    - name: 'change permissions'
+      shell: echo $( +x mariadb_repo_setup)
+      become_user: root
+      become: yes
+
+    - name: install python3-dev
+      dnf:
+        name=python3-devel
+        state=latest
+      become: yes
+      become_user: root
+
+    - name: 'install pymysql'
+      shell: echo $(pip3 install PyMySQL)
+      become: yes
+      become_user: root
+
+    - name: 'setup'
+      shell: echo $( ./mariadb/repo_setup)
+      become: yes
+      become_user: root
+
+    - name: 'start service'
+      shell: echo $( systemctl start mariadb.service)
+      become: yes
+      become_user: root
+

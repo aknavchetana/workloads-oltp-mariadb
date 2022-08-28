@@ -1,0 +1,56 @@
+Installattion MariaDB
+================
+curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.5.6" --os-type=ubuntu --os-version=focal
+sudo apt install mariadb-server
+sudo mysql_secure_installation 
+
+Note: for the above step; Enter 'Y' for all steps; Define the password for the db instances as 'root'
+
+
+Install HammerDB
+=================
+wget https://github.com/TPC-Council/HammerDB/releases/download/v4.1/HammerDB-4.1-Linux.tar.gz
+tar -zxvf HammerDB-4.1-Linux.tar.gz 
+cd HammerDB-4.1
+
+Running HammerDB
+=================
+su mysql (sudo set passwd mysql)
+ln -s /run/mysqld/mysqld.sock /tmp/mysql.sock 
+./hammerdbcli
+
+
+Running Test
+============
+dbset db mysql
+dbset bm tpc-c
+diset tpcc mysql_pass root
+
+(set the following to 400 if #cores < 32. else 800. note: my.cnf should have proper configurations set. Try 2 for 1st attempt)
+diset tpcc mysql_count_ware 800
+diset tpcc mysql_count_ware 1
+
+(set the following to #cores. note: my.cnf should have proper configurations set. Try 2 for 1st attempt)
+diset tpcc mysql_num_vu 80
+diset tpcc mysql_num_vu 1
+
+buildschema
+
+(On Building scheme, before running the tests, run:)
+$ systemctl restart mariadb (if it asks for password, then create one using the set passwd command)
+
+$ ./hammerdbcli
+dbset db mysql
+dbset bm tpc-c
+diset tpcc mysql_pass root
+diset tpcc mysql_driver timed
+diset tpcc mysql_timeprofile true
+loadscript
+vudestroy
+
+(vary the following while  running tests, i.e. from 1 to #VU. Try 2 for 1st attempt)
+vuset vu 128
+vucreate
+vurun
+(record the TPM and NOPM values)
+vudestroy

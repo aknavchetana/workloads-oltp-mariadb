@@ -1,0 +1,35 @@
+- name: "MariaDB datbase creation"
+  hosts: all
+  become: 'True'
+  vars:
+    db_name: "lmariadb_dbname"
+    db_password: "lmariadb_ dbpassword"
+    db_user: "lmariadb_dbusername"
+    mariadb_password: ""
+    mariadb_login_unix_socket: /var/lib/mysql/mysql.sock
+  tasks:
+    - name: "install acl"
+      yum:
+        name: acl
+        state: present
+    - name: "Create database"
+      mysql_db:
+        state: present
+        name: "{{ db_name }}"
+        login_user: root
+        login_password: "{{ mariadb_password }}"
+        login_unix_socket: "{{ mariadb_login_unix_socket }}"
+      become: yes
+      become_user: root
+    - name: "Create db user"
+      mysql_user:
+        state: present
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        login_user: root
+        login_password: "{{ mariadb_password }}"
+        priv: "*.*:ALL,GRANT"
+        check_implicit_admin: yes
+        login_unix_socket: "{{ mariadb_login_unix_socket }}"
+      become: yes
+      become_user: root
